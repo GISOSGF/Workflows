@@ -1,0 +1,15 @@
+// Using the same technical relationship name that worked for eggs
+var related_fs = FeatureSetByRelationshipName($feature, "R0L0Bird_BoxesL3Bird_Box_Monitoring");
+
+// Sorting by cdate to get the most recent inspection
+var sorted = OrderBy(related_fs, "cdate DESC");
+
+// Grab the latest record
+var latest = First(sorted);
+
+// Return the nestling count
+if (latest != null) {
+    return latest.nestnum;
+} else {
+    return 0;
+}
