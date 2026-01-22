@@ -1,0 +1,14 @@
+// Use the exact title from your relationship properties window
+var related_fs = FeatureSetByRelationshipName($feature, "R0L0Bird_BoxesL3Bird_Box_Monitoring");
+
+// Sort by your 'cdate' field
+var sorted = OrderBy(related_fs, "cdate DESC");
+
+// Get the latest record
+var latest = First(sorted);
+
+if (latest != null) {
+    return latest.eggnum;
+} else {
+    return 0;
+}
