@@ -1,4 +1,8 @@
-//
+// Calculated expression for the Bird Box Monitoring related table
+// Used for field 'clutch_id' 
+// Autopopulates field based on 'new_clutch' field domain values of yes, no, unsure
+// If yes, then a new clutch_id is generated sequentially (box_id_0x+1)
+// If unsure, then the clutch_id remains the same
 
 
 
