@@ -1,33 +1,38 @@
 // Calculated expression for the Bird Box Monitoring related table
-// Used for field 'clutch_id' 
+// Used on field 'clutch_id' 
 // Autopopulates field based on 'new_clutch' field domain values of yes, no, unsure
-// If yes, then a new clutch_id is generated sequentially (box_id_0x+1)
-// If unsure, then the clutch_id remains the same
+// If 'speciesocc' = none, no id is created
+// If 'new_clutch' = yes, then a new clutch_id is generated sequentially (box_id_0x+1)
+// If 'new_clutch' = unsure, then the clutch_id remains the same
 
 
 
-// 'box_id' is the key to link these records
 var box = $feature.box_id;
 var trigger = $feature.new_clutch;
+var occupancy = $feature.speciesocc;
 
-// This references the table itself to look at previous visits
+// 1. If speciesocc is 'None', do not create a clutch_id
+if (occupancy == 'None' || IsEmpty(occupancy)) {
+    return null;
+}
+
+// 2. Otherwise, look at the table history to handle the ID
 var box_history = Filter($layer, "box_id = '" + box + "'");
 
 if (trigger == 'Yes') {
-    // Look at how many unique clutch IDs already exist for this box
+    // Definitive new clutch: count existing unique IDs and add 1
     var unique_clutches = Distinct(box_history, "clutch_id");
     var next_num = Count(unique_clutches) + 1;
-    
-    // Returns e.g., BOX_01_clutch02
     return box + "_clutch" + Text(next_num, "00");
 } else {
-    // For 'No' or 'Unsure', we find the most recent record's ID
+    // 'No' or 'Unsure': fetch the most recent ID for this box
+    // We sort by cdate to ensure we get the actual "last" visit
     var last_rec = First(OrderBy(box_history, "cdate DESC"));
     
-    if (!IsEmpty(last_rec)) {
+    if (!IsEmpty(last_rec) && !IsEmpty(last_rec.clutch_id)) {
         return last_rec.clutch_id;
     } else {
-        // If this is the first record ever for this box, start at 01
+        // If there's no previous valid clutch ID, start with 01
         return box + "_clutch01";
     }
 }
