@@ -1,18 +1,18 @@
-## Arcade expression to calculate the last record for eggnum for bird box monitoring
-## Open Pro, add 'Bird Box Monitoring' to the map via the portal
-## Open the 'Bird_Boxes' point layer table
-## Select the 'Last Egg Count'/ 'last_eggnum' column and right click to activate the tool 'Calculate Field'
-## Ensure the correct table and field name at the top of the window, select 'Arcade' as 'Expression Type'
-## Copy the code below into the 'last_eggnum =' window and click ok
-## Values will update based on last record
+// Arcade expression to calculate the last record for eggnum for bird box monitoring
+// Open Pro, add 'Bird Box Monitoring' to the map via the portal
+// Open the 'Bird_Boxes' point layer table
+// Select the 'Last Egg Count'/ 'last_eggnum' column and right click to activate the tool 'Calculate Field'
+// Ensure the correct table and field name at the top of the window, select 'Arcade' as 'Expression Type'
+// Copy the code below into the 'last_eggnum =' window and click ok
+// Values will update based on last record
 
-## The related records name
+// The related records name
 var related_fs = FeatureSetByRelationshipName($feature, "R0L0Bird_BoxesL3Bird_Box_Monitoring");
 
-## Sort the'cdate' field which is the date of monitoring
+// Sort the'cdate' field which is the date of monitoring
 var sorted = OrderBy(related_fs, "cdate DESC");
 
-## Get the latest record
+// Get the latest record
 var latest = First(sorted);
 
 if (latest != null) {
