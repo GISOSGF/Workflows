@@ -12,6 +12,7 @@ var related_fs = FeatureSetByRelationshipName($feature, "R0L0Bird_BoxesL3Bird_Bo
 // Sort the'cdate' field which is the date of monitoring
 var sorted = OrderBy(related_fs, "cdate DESC");
 
+// Get the latest record
 var latest = First(sorted);
 
 // Return the nestling count
