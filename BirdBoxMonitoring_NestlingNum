@@ -1,10 +1,17 @@
-// Using the same technical relationship name that worked for eggs
+// Arcade expression to calculate the last record for nestnum for bird box monitoring
+// Open Pro, add 'Bird Box Monitoring' to the map via the portal
+// Open the 'Bird_Boxes' point layer table
+// Select the 'Last Nestling Count'/ 'last_nestnum' column and right click to activate the tool 'Calculate Field'
+// Ensure the correct table and field name at the top of the window, select 'Arcade' as 'Expression Type'
+// Copy the code below into the 'last_nestnum =' window and click ok
+// Values will update based on last record
+
+// The related records name
 var related_fs = FeatureSetByRelationshipName($feature, "R0L0Bird_BoxesL3Bird_Box_Monitoring");
 
-// Sorting by cdate to get the most recent inspection
+// Sort the'cdate' field which is the date of monitoring
 var sorted = OrderBy(related_fs, "cdate DESC");
 
-// Grab the latest record
 var latest = First(sorted);
 
 // Return the nestling count
