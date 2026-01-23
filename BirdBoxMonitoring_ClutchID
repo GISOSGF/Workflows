@@ -1,0 +1,29 @@
+//
+
+
+
+// 'box_id' is the key to link these records
+var box = $feature.box_id;
+var trigger = $feature.new_clutch;
+
+// This references the table itself to look at previous visits
+var box_history = Filter($layer, "box_id = '" + box + "'");
+
+if (trigger == 'Yes') {
+    // Look at how many unique clutch IDs already exist for this box
+    var unique_clutches = Distinct(box_history, "clutch_id");
+    var next_num = Count(unique_clutches) + 1;
+    
+    // Returns e.g., BOX_01_clutch02
+    return box + "_clutch" + Text(next_num, "00");
+} else {
+    // For 'No' or 'Unsure', we find the most recent record's ID
+    var last_rec = First(OrderBy(box_history, "cdate DESC"));
+    
+    if (!IsEmpty(last_rec)) {
+        return last_rec.clutch_id;
+    } else {
+        // If this is the first record ever for this box, start at 01
+        return box + "_clutch01";
+    }
+}
