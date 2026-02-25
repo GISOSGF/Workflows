@@ -1,0 +1,19 @@
+// 1. Set your IDs
+var surveyID = "3295fbefa2c14db5b90048f68218656d";
+var portalURL = "https://gis.oakspring.org/arcgisportal";
+
+// 2. Get the IDs and Attributes from your feature
+var polyGUID = $feature.GlobalID;
+var polyName = $feature.name;    // Ensure 'name' is the exact internal field name
+var locName = $feature.locname;  // Ensure 'locname' is the exact internal field name
+
+// 3. Build the link with multiple parameters
+// We use UrlEncode to handle any spaces or special characters in names
+var url = "https://survey123.arcgis.com/share/" + surveyID + 
+          "?portalUrl=" + portalURL + 
+          "&field:loc_guid=" + polyGUID +
+          "&field:name=" + UrlEncode(polyName) +
+          "&field:locname=" + UrlEncode(locName);
+
+// 4. Return the result
+return url;
