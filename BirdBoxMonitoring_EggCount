@@ -6,10 +6,10 @@
 // Copy the code below into the 'last_eggnum =' window and click ok
 // Values will update based on last record
 
-// The related records name
-var related_fs = FeatureSetByRelationshipName($feature, "R0L0Bird_BoxesL3Bird_Box_Monitoring");
+// The related records name 
+var related_fs = FeatureSetByRelationshipName($feature, "R0L0Bird_Box_Locations_2026L1Bird_Monitoring_2026_Table");
 
-// Sort the'cdate' field which is the date of monitoring
+// Sort by date
 var sorted = OrderBy(related_fs, "cdate DESC");
 
 // Get the latest record
