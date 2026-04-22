@@ -1,0 +1,31 @@
+var p = Portal("https://gis.oakspring.org/arcgisportal");
+
+var fs = FeatureSetByPortalItem(
+    p, 
+    "d3e653268b9e48f39217bc342662f6c5", 
+    1, 
+    ["box_id", "eggnum", "occupynative", "OBJECTID"], 
+    false
+);
+
+// 1. Filter for Native species
+var nativeOnly = Filter(fs, "occupynative = 'Yes, Native'");
+
+// 2. Find the LATEST record ID for each box
+var latestRecords = GroupBy(nativeOnly, ["box_id"], [
+    { name: "LastOID", expression: "OBJECTID", statistic: "MAX" }
+]);
+
+// 3. Extract the IDs into an array
+var oids = [];
+for (var row in latestRecords) {
+    Push(oids, row.LastOID);
+}
+
+// 4. Filter the original set to ONLY those specific "last" records
+// This ensures we only have 1 record per box: the most recent one.
+var finalSet = Filter(nativeOnly, "OBJECTID IN @oids");
+
+// 5. Return the set
+// In Dashboard: Choose SUM of the 'eggnum' field
+return finalSet;
