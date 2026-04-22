@@ -1,38 +1,35 @@
 // Calculated expression for the Bird Box Monitoring related table
-// Used on field 'clutch_id' 
-// Autopopulates field based on 'new_clutch' field domain values of yes, no, unsure
-// If 'speciesocc' = none, no id is created
-// If 'new_clutch' = yes, then a new clutch_id is generated sequentially (box_id_0x+1)
-// If 'new_clutch' = unsure, then the clutch_id remains the same
-
-
-
 var box = $feature.box_id;
 var trigger = $feature.new_clutch;
-var occupancy = $feature.speciesocc;
 
-// 1. If speciesocc is 'None', do not create a clutch_id
-if (occupancy == 'None' || IsEmpty(occupancy)) {
-    return null;
-}
+// 1. Get the history for this specific box, ordered by date (newest first)
+var box_history = OrderBy(Filter($layer, "box_id = '" + box + "'"), "cdate DESC");
+var last_rec = First(box_history);
 
-// 2. Otherwise, look at the table history to handle the ID
-var box_history = Filter($layer, "box_id = '" + box + "'");
-
+// 2. Scenario A: A new clutch is starting (Trigger is explicitly 'Yes')
 if (trigger == 'Yes') {
-    // Definitive new clutch: count existing unique IDs and add 1
-    var unique_clutches = Distinct(box_history, "clutch_id");
-    var next_num = Count(unique_clutches) + 1;
-    return box + "_clutch" + Text(next_num, "00");
-} else {
-    // 'No' or 'Unsure': fetch the most recent ID for this box
-    // We sort by cdate to ensure we get the actual "last" visit
-    var last_rec = First(OrderBy(box_history, "cdate DESC"));
+    // Filter history to find existing unique clutch IDs
+    var valid_history = Filter(box_history, "clutch_id IS NOT NULL");
+    var unique_clutches = Distinct(valid_history, "clutch_id");
     
+    var valid_clutch_count = 0;
+    for (var item in unique_clutches) {
+        if (!IsEmpty(item.clutch_id) && item.clutch_id != "") {
+            valid_clutch_count++;
+        }
+    }
+    
+    var next_num = valid_clutch_count + 1;
+    return box + "_clutch" + Text(next_num, "00");
+} 
+
+// 3. Scenario B: Carrying forward (Trigger is 'No', 'Unsure', or Null/Empty)
+else {
+    // If a previous record exists, carry over its clutch_id
     if (!IsEmpty(last_rec) && !IsEmpty(last_rec.clutch_id)) {
         return last_rec.clutch_id;
-    } else {
-        // If there's no previous valid clutch ID, start with 01
-        return box + "_clutch01";
-    }
+    } 
+    
+    // Otherwise, if there's no history or the last record was also null, return null
+    return null;
 }
